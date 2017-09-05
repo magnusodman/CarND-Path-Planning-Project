@@ -160,8 +160,6 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
 	return {x,y};
 
 }
-//int lane = 0;
-//double ref_vel = 49.5; //mph
 
 statemachine sm;
 
@@ -270,7 +268,7 @@ int main() {
             ego.d = car_d;
             ego.speed = car_speed;
 
-          sm.Update(ego, cars);
+            sm.Update(ego, cars);
 
 
             int prev_size = previous_path_x.size();
@@ -350,6 +348,7 @@ int main() {
             }
 
             double target_x = 30.0;
+
             double target_y = s(target_x);
             double target_dist =  sqrt(pow(target_x,2) + pow(target_y, 2));
 
@@ -366,7 +365,7 @@ int main() {
               double  x_ref = x_point;
               double  y_ref = y_point;
 
-              x_point = (x_ref * cos(ref_yaw)-y_ref * sin(ref_yaw));
+              x_point = (x_ref * cos(ref_yaw) - y_ref * sin(ref_yaw));
               y_point = (x_ref * sin(ref_yaw) + y_ref * cos(ref_yaw));
 
               x_point += ref_x;

@@ -8,6 +8,8 @@
 
 #include <vector>
 
+enum STATE {KEEP_LANE, CHANGE_LANE_LEFT, CHANGE_LANE_RIGHT};
+
 struct car {
     long id;
     double x;
@@ -21,10 +23,19 @@ struct car {
 class statemachine {
 
 public:
+    STATE state = KEEP_LANE;
     int lane = 1;
     double ref_vel = 0;
 
     void Update(car ego, std::vector<car> cars);
+
+    void changeLaneLeft();
+
+    void keepLane(car ego, std::vector<car> cars);
+
+    void updateLaneShift(car ego);
+
+    void changeLaneRight();
 };
 
 

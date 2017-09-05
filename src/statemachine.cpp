@@ -8,7 +8,24 @@
 #include <math.h>
 
 
+enum LANE {LEGFT = 0, MIDDLE = 1, RIGHT=2 };
+
 void statemachine::Update(car ego, std::vector<car> cars) {
+
+  switch (state) {
+    case CHANGE_LANE_LEFT:
+      updateLaneShift(ego);
+      break;
+    case CHANGE_LANE_RIGHT:
+      updateLaneShift(ego);
+      break;
+    default:
+      keepLane(ego, cars);
+  }
+}
+
+
+void statemachine::keepLane(car ego, std::vector<car> cars) {
   bool to_close = false;
   double speed_ahead = ref_vel;
 
@@ -56,6 +73,7 @@ void statemachine::Update(car ego, std::vector<car> cars) {
   }
 
   bool right_lane_free = true;
+  bool right_can_change = true;
   if(lane == 2) {
     right_lane_free = false;
   } else {
@@ -66,6 +84,9 @@ void statemachine::Update(car ego, std::vector<car> cars) {
       if (other_car.d < ((lane+2) * 4) && other_car.d > (lane+1) * 4) {
         if (diff_s < 60 and diff_s > -20) {
           right_lane_free = false;
+        }
+        if(diff_s < 15 and diff_s > -10 ) {
+          right_can_change = false;
         }
       }
     }
@@ -89,27 +110,65 @@ void statemachine::Update(car ego, std::vector<car> cars) {
 
 
 
-  std::cout << "LANES: " << "|" << (left_lane_free? " ": "B") << "|" << (current_lane_free? " ": "B") << "|" << (right_lane_free?" ": "B") << "|" <<std::endl;
 
+  std::cout << "Current lane: " << lane << "State: " << state << " LANES: " << "|" << (left_lane_free? " ": "B") << "|" << (current_lane_free? " ": "B") << "|" << (right_lane_free?" ": "B") << "|" << " s: " << ego.s <<std::endl;
+
+
+
+  if(current_lane_free) {
+    //
+  } else {
+
+
+    if (left_lane_free) {
+      changeLaneLeft();
+
+    }
+    else if (right_lane_free) {
+      changeLaneRight();
+    } else {
+      if (lane == 0 && right_can_change) {
+        changeLaneRight();
+      } else if( lane == 2 && left_can_change) {
+        changeLaneLeft();
+      }
+    }
+  }
 
   if (!to_close) {
-    if(lane == 0 && right_lane_free) {
-      lane = 1;
-    }
+    //Accelerate
     if(this-> ref_vel < 49.5) {
       ref_vel += 0.224;
     }
   } else {
-    if(lane == 0 && right_lane_free) {
-      lane = 1;
-    }
-    if(left_lane_free) {
-      lane = lane - 1;
 
-    }
     if(ref_vel > speed_ahead * 2.24) {
       ref_vel -= 0.224;
     }
   }
+}
+
+void statemachine::updateLaneShift(car ego) {
+  double centerLine = (lane + 1) * 4 - 2;
+  double distance_to_center_line = sqrt(pow(ego.d - centerLine, 2));
+  if(distance_to_center_line < 1) {
+    state = KEEP_LANE;
+
+  }
+  std::cout << "Current lane: " << lane << " State: " << state << " distance to center: " << distance_to_center_line << std::endl;
 
 }
+
+void statemachine::changeLaneRight() {
+  state = CHANGE_LANE_RIGHT;
+  lane = lane + 1;
+
+
+}
+
+void statemachine::changeLaneLeft() {
+
+  lane = lane - 1;
+  state = CHANGE_LANE_LEFT;
+
+ }
