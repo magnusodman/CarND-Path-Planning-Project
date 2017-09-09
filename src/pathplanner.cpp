@@ -15,7 +15,7 @@ void pathplanner::PlanPath(car ego, std::vector<car> cars) {
   std::vector< std::vector<char>> maze;
   //Check 5 seconds into the future
   for(int seconds = 0; seconds < 8; seconds++) {
-    double s_min = -10.0 + ego.s + speed_m_s  * seconds;
+    double s_min = -5.0 + ego.s + speed_m_s  * seconds;
     double s_max = ego.s + speed_m_s * (seconds+1);
 
     std::vector<char> occupied_lanes;
@@ -37,9 +37,21 @@ void pathplanner::PlanPath(car ego, std::vector<car> cars) {
     maze.push_back(occupied_lanes);
   }
 
+  long ego_lane = long(ego.d / 4);
+  if(ego_lane >= 0 && ego_lane < 3) {
+    maze[0][ego_lane] = 'H';
+    maze[maze.size()-1][ego_lane] = 'O';
+  }
+
+
+
+
   for(int index = maze.size()-1; index >= 0; index--) {
     auto lane = maze[index];
     std::cout << "|" << lane[0] <<  "|" << lane[1] <<  "|" << lane[2] << "|" << " t = " << index << std::endl;
   }
+
+
+
 
 }
