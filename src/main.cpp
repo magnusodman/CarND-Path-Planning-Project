@@ -10,6 +10,8 @@
 #include "json.hpp"
 #include "spline.h"
 #include "statemachine.h"
+#include "pathplanner.h"
+
 
 using namespace std;
 
@@ -162,6 +164,7 @@ vector<double> getXY(double s, double d, vector<double> maps_s, vector<double> m
 }
 
 statemachine sm;
+pathplanner pp;
 
 
 int main() {
@@ -213,6 +216,7 @@ int main() {
     // The 2 signifies a websocket event
     //auto sdata = string(data).substr(0, length);
     //cout << sdata << endl;
+    //  cout << data[0] << data[1] << endl;
     if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
       auto s = hasData(data);
@@ -221,7 +225,17 @@ int main() {
         auto j = json::parse(s);
         
         string event = j[0].get<string>();
-        
+
+        if (event == "monitoring") {
+
+          json msgJson;
+
+          msgJson["state"] = ":)";
+          auto msg = "42[\"control\"," + msgJson.dump() + "]";
+
+          ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+        }
+
         if (event == "telemetry") {
           // j[1] is the data JSON object
           
@@ -268,6 +282,7 @@ int main() {
             ego.d = car_d;
             ego.speed = car_speed;
 
+            pp.PlanPath(ego, cars);
             sm.Update(ego, cars);
 
 
@@ -312,6 +327,18 @@ int main() {
 
             }
 
+          double wp_distance = max(10.0, ego.speed * 0.44 * 2.5);
+          std::cout << "wp_distance: " << wp_distance << std::endl;
+            for(int wp_index = 0; wp_index < 3; wp_index++) {
+
+              vector<double> next_wp = getXY(car_s + (wp_index + 1) * wp_distance, (2+4*sm.lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+              ptsx.push_back(next_wp[0]);
+              ptsy.push_back(next_wp[1]);
+
+
+            }
+
+            /*
             vector<double> next_wp0 = getXY(car_s+30, (2+4*sm.lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp1 = getXY(car_s+60, (2+4*sm.lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
             vector<double> next_wp2 = getXY(car_s+90, (2+4*sm.lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
@@ -323,6 +350,8 @@ int main() {
             ptsy.push_back(next_wp0[1]);
             ptsy.push_back(next_wp1[1]);
             ptsy.push_back(next_wp2[1]);
+
+             */
 
             for (int i = 0; i < ptsx.size(); i++)
             {

@@ -37,13 +37,13 @@ void statemachine::keepLane(car ego, std::vector<car> cars) {
 
 
       if(diff_s < 40 and diff_s > 0) {
-        std::cout << other_car.id << ", " << diff_s << ", " << other_car.speed << std::endl;
+        //std::cout << other_car.id << ", " << diff_s << ", " << other_car.speed << std::endl;
         if(other_car.speed < ego.speed) {
 
           to_close = true;
           if(speed_ahead > other_car.speed) {
             speed_ahead = other_car.speed;
-            std::cout << "BLOCKED BY " << other_car.id << " DIST: " << diff_s << "[ " << speed_ahead << "]" << std::endl;
+            //std::cout << "BLOCKED BY " << other_car.id << " DIST: " << diff_s << "[ " << speed_ahead << "]" << std::endl;
           }
         }
 
