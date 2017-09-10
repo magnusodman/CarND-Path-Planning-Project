@@ -17,7 +17,7 @@ struct car {
     double speed;
     double s;
     double d;
-
+    double yaw;
 };
 
 class statemachine {
