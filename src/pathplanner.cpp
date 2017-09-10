@@ -14,8 +14,9 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
 
 
   std::vector<std::vector<char>> maze;
-  //Check 5 seconds into the future
-  for (int seconds = 0; seconds < 12; seconds++) {
+  //Check 12 seconds into the future
+  for (int iteration = 0; iteration < 8; iteration++) {
+    int seconds = iteration * 2;
     double s_min = -10.0 + ego.s + speed_m_s * seconds;
     double s_max = ego.s + speed_m_s * (seconds + 2);
 
