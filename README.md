@@ -7,13 +7,13 @@ My solution is based on the Udacity project walkthrough (in particular this appl
 The code is structured into three parts.
 
 1. Path planner
-2. State machine
+2. State machine (Vehicle)
 3. Trajectory generator
 
 Path planner
 ------------
 
-The path planner looks 16 seconds into the future and creates a maze using the cars current position and velocity as starting point. Using the cars current speed
+The path planner looks 16 seconds into the future and creates a maze using the current position of the car and velocity as starting point to create a grid.
 
 ```
 ----------------
@@ -46,9 +46,9 @@ The path planner looks 16 seconds into the future and creates a maze using the c
 ----------------
 ```
 
-The for each car detected by the sensors I calculate from each cars current position (s, d) and speed where each car is for every given point of time. If they happen to end up in the grid that grid is marked as an obstacle (X). A car close by with a similar velocity will take up many spaces in the grid.
+From each cars' current position (s, d) and speed I calculate where each car is for every given point of time. If they happen to end up in the grid, that grid space is marked as an obstacle (X). A car close by with a similar velocity will take up many spaces in the grid.
 
-The starting point (C) is the grid space at t=0 and the lane the car currently occupies. The goal (G) for the path planner is set to the most distant grid row but at the same lane. This setup favors staying in a straight line if no other cars are present.
+The starting point (C) is the grid space at t=0 and the lane that the car currently occupies. The goal (G)  is set to the most distant grid row but at the same lane. This setup favors staying in a straight line if no other cars are present.
 
 
 ```
@@ -115,7 +115,9 @@ This grid and obstacles is fed into an A* solver. I opted for using an existing 
 ----------------
 ```
 
-The path planner uses only the first step in the solution (marked 9 above) to make it's path recommendation. In this case it recommends to keep the current lane. The path planner results is printed to standard out.
+This implementation of A* allways return a result even if a real solution can not be found. This solution can be used to try to navigate forward in queues.
+
+The path planner uses only the first step in the solution (marked 9 above) to make it's path recommendation. In this example case it recommends to keep the current lane. The path planner results is printed to standard out for easy diagnostics.
 
 There are certainly possible optimizations in this module. The path planner could explore the velocity dimension and try to find solutions when slowing down or accelerating from the current speed. To avoid collisions i set a two second margin (in relation to the car speed) to other cars. If this margin could be lowered the car would be much better to navigate queues. That would require trying to predict the other cars movements more in detail.
 
