@@ -11,7 +11,7 @@
 class pathplanner {
 
 public:
-    void PlanPath(car ego, std::vector<car> cars);
+    STATE PlanPath(car ego, std::vector<car> cars);
 };
 
 
