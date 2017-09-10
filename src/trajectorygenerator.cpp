@@ -80,7 +80,6 @@ trajectorygenerator::GenerateTrajectory(car ego, statemachine sm, std::vector<do
   }
 
   double wp_distance = std::max(10.0, ego.speed * 0.44 * 2.5);
-  std::cout << "wp_distance: " << wp_distance << std::endl;
   for (int wp_index = 0; wp_index < 3; wp_index++) {
 
     std::vector<double> next_wp = l_getXY(ego.s + (wp_index + 1) * wp_distance, (2 + 4 * sm.lane), map_waypoints_s,

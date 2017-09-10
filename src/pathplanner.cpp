@@ -16,7 +16,7 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
   std::vector<std::vector<char>> maze;
   //Check 5 seconds into the future
   for (int seconds = 0; seconds < 12; seconds++) {
-    double s_min = -5.0 + ego.s + speed_m_s * seconds;
+    double s_min = -10.0 + ego.s + speed_m_s * seconds;
     double s_max = ego.s + speed_m_s * (seconds + 2);
 
     std::vector<char> occupied_lanes;
@@ -26,6 +26,7 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
 
 
     for (auto other_car: cars) {
+
       double other_car_s = other_car.s + other_car.speed * 0.44 * seconds;
 
       if (other_car_s > s_min && other_car_s < s_max) {
@@ -69,14 +70,8 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
 
   }
 
-
-  std::cout << "Generate path ... \n";
   // This method returns vector of coordinates from target to source.
   auto path = generator.findPath({0, int(ego_lane)}, {int(maze.size()) - 1, int(ego_lane)});
-
-  for (auto &coordinate : path) {
-    std::cout << coordinate.x << " " << coordinate.y << "\n";
-  }
 
   for (int coordinate_index = 0; coordinate_index < path.size(); coordinate_index++) {
     auto coordinate = path[coordinate_index];
@@ -120,5 +115,6 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
     std::cout << "|" << lane[0] << "|" << lane[1] << "|" << lane[2] << "|" << " t = " << index << " " << signal
               << std::endl;
   }
+  std::cout << std::endl;
   return state;
 }
