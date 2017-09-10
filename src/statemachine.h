@@ -8,7 +8,9 @@
 
 #include <vector>
 
-enum STATE {KEEP_LANE, CHANGE_LANE_LEFT, CHANGE_LANE_RIGHT};
+enum STATE {
+    KEEP_LANE, CHANGE_LANE_LEFT, CHANGE_LANE_RIGHT
+};
 
 struct car {
     long id;
@@ -39,7 +41,6 @@ public:
 
     void keepLane2(car ego, std::vector<car> cars, STATE path);
 };
-
 
 
 #endif //PATH_PLANNING_STATEMACHINE_H
