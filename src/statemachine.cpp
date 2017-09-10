@@ -10,7 +10,7 @@
 
 enum LANE {LEGFT = 0, MIDDLE = 1, RIGHT=2 };
 
-void statemachine::Update(car ego, std::vector<car> cars) {
+void statemachine::Update(car ego, std::vector<car> cars, STATE path) {
 
   switch (state) {
     case CHANGE_LANE_LEFT:
@@ -20,12 +20,65 @@ void statemachine::Update(car ego, std::vector<car> cars) {
       updateLaneShift(ego);
       break;
     default:
-      keepLane(ego, cars);
+      keepLane2(ego, cars, path);
   }
 }
 
+void statemachine::keepLane2(car ego, std::vector<car> cars, STATE path) {
+  bool to_close = false;
+  double speed_ahead = ref_vel;
 
-void statemachine::keepLane(car ego, std::vector<car> cars) {
+  //double distance_to_car_ahead = 40;
+  double distance_to_car_ahead = 1.9*ego.speed*0.44;
+
+  for (int index = 0; index < cars.size(); index++) {
+    auto other_car = cars[index];
+    double diff_d = sqrt(pow(ego.d - other_car.d,2));
+    double diff_s = other_car.s - ego.s;
+    if (other_car.d < (2+4*lane+2) && other_car.d > (2 + 4*lane-1)) {
+
+
+      if(diff_s < distance_to_car_ahead and diff_s > 0) {
+        //std::cout << other_car.id << ", " << diff_s << ", " << other_car.speed << std::endl;
+        if(other_car.speed < ego.speed) {
+
+          to_close = true;
+          if(speed_ahead > other_car.speed) {
+            speed_ahead = other_car.speed*.95;
+            //std::cout << "BLOCKED BY " << other_car.id << " DIST: " << diff_s << "[ " << speed_ahead << "]" << std::endl;
+          }
+        }
+
+      }
+    }
+  }
+
+  switch (path) {
+    case CHANGE_LANE_LEFT:
+      changeLaneLeft();
+      break;
+    case CHANGE_LANE_RIGHT:
+      changeLaneRight();
+      break;
+    default:
+      break;
+  }
+
+  if (!to_close) {
+    //Accelerate
+    if(this-> ref_vel < 49.5) {
+      ref_vel += 0.224;
+    }
+  } else {
+
+    if(ref_vel > speed_ahead * 2.24) {
+      ref_vel -= 0.224;
+    }
+  }
+
+}
+
+void statemachine::keepLane(car ego, std::vector<car> cars, STATE path) {
   bool to_close = false;
   double speed_ahead = ref_vel;
 
@@ -134,6 +187,7 @@ void statemachine::keepLane(car ego, std::vector<car> cars) {
       }
     }
   }
+
 
   if (!to_close) {
     //Accelerate

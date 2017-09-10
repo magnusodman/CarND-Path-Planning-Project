@@ -27,15 +27,17 @@ public:
     int lane = 1;
     double ref_vel = 0;
 
-    void Update(car ego, std::vector<car> cars);
+    void Update(car ego, std::vector<car> cars, STATE state1);
 
     void changeLaneLeft();
 
-    void keepLane(car ego, std::vector<car> cars);
+    void keepLane(car ego, std::vector<car> cars, STATE state);
 
     void updateLaneShift(car ego);
 
     void changeLaneRight();
+
+    void keepLane2(car ego, std::vector<car> cars, STATE path);
 };
 
 

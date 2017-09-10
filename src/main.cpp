@@ -285,8 +285,8 @@ int main() {
             ego.yaw = car_yaw;
             ego.speed = car_speed;
 
-            auto state = pp.PlanPath(ego, cars);
-            sm.Update(ego, cars);
+            auto plan = pp.PlanPath(ego, cars);
+					sm.Update(ego, cars, plan);
             auto trajectories = tj.GenerateTrajectory(ego, sm, previous_path_x, previous_path_y, map_waypoints_s, map_waypoints_x,
                                 map_waypoints_y);
 

@@ -16,9 +16,9 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
 
   std::vector< std::vector<char>> maze;
   //Check 5 seconds into the future
-  for(int seconds = 0; seconds < 8; seconds++) {
+  for(int seconds = 0; seconds < 12; seconds++) {
     double s_min = -5.0 + ego.s + speed_m_s  * seconds;
-    double s_max = ego.s + speed_m_s * (seconds+1);
+    double s_max = ego.s + speed_m_s * (seconds+2);
 
     std::vector<char> occupied_lanes;
     occupied_lanes.push_back(' ');
@@ -79,28 +79,30 @@ STATE pathplanner::PlanPath(car ego, std::vector<car> cars) {
     std::cout << coordinate.x << " " << coordinate.y << "\n";
   }
 
-  for(auto coordinate: path) {
+  for(int coordinate_index = 0; coordinate_index < path.size();  coordinate_index++) {
+    auto coordinate = path[coordinate_index];
     int row = coordinate.x;
     int col = coordinate.y;
     if(maze[row][col] != 'H' && maze[row][col] != 'O') {
-      if(maze[row][col] != 'X') {
+      if(maze[row][col] == 'X') {
         maze[row][col] = '*';
       } else {
-        maze[row][col] = '.';
+        maze[row][col] = std::to_string(coordinate_index)[0];
       }
     }
 
   }
 
   STATE state = KEEP_LANE;
+  auto next = path[path.size()-2];
   if(path.size() > 2) {
-    if(path[1].x == 1) {
+    if(next.x == 1) {
       state = KEEP_LANE;
     } else {
-      if(path[1].y > ego_lane) {
+      if(next.y > ego_lane) {
         state = CHANGE_LANE_RIGHT;
       }
-      if(path[1].y < ego_lane) {
+      if(next.y < ego_lane) {
         state = CHANGE_LANE_LEFT;
       }
     }
