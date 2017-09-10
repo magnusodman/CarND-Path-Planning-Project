@@ -35,11 +35,13 @@ public:
 
     void keepLane(car ego, std::vector<car> cars, STATE state);
 
-    void updateLaneShift(car ego);
+    void updateLaneShift(car ego, std::vector<car> vector);
 
     void changeLaneRight();
 
     void keepLane2(car ego, std::vector<car> cars, STATE path);
+
+    void adjustSpeed(const car &ego, const std::vector<car> &cars);
 };
 
 
